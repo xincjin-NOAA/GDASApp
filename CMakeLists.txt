@@ -71,7 +71,7 @@ if(BUILD_GDASBUNDLE)
   endif()
 
 # Gibbs seawater
-  ecbuild_bundle( PROJECT gsw GIT "https://github.com/jcsda-internal/GSW-Fortran.git" BRANCH develop )
+# xjin  ecbuild_bundle( PROJECT gsw GIT "https://github.com/jcsda-internal/GSW-Fortran.git" BRANCH develop )
 
 # Core JEDI repositories
   ecbuild_bundle( PROJECT oops  GIT "https://github.com/jcsda/oops.git"  BRANCH develop )
@@ -91,15 +91,15 @@ if(BUILD_GDASBUNDLE)
 
 # SOCA associated repositories
 # TODO: Move the Icepack fork to EMC github
-  set(BUILD_ICEPACK "ON" CACHE STRING "Build the icepack library")
-  if ( BUILD_ICEPACK )
-    ecbuild_bundle( PROJECT icepack GIT "https://github.com/JCSDA-internal/Icepack.git" BRANCH feature/ecbuild-new )
-  endif()
-  ecbuild_bundle( PROJECT mom6 GIT "https://github.com/jcsda-internal/MOM6.git" BRANCH main-ecbuild RECURSIVE )
-  ecbuild_bundle( PROJECT soca GIT "https://github.com/jcsda-internal/soca.git" BRANCH develop )
+  # xjin set(BUILD_ICEPACK "ON" CACHE STRING "Build the icepack library")
+  # if ( BUILD_ICEPACK )
+  #  ecbuild_bundle( PROJECT icepack GIT "https://github.com/JCSDA-internal/Icepack.git" BRANCH feature/ecbuild-new )
+  # endif()
+  # ecbuild_bundle( PROJECT mom6 GIT "https://github.com/jcsda-internal/MOM6.git" BRANCH main-ecbuild RECURSIVE )
+  # ecbuild_bundle( PROJECT soca GIT "https://github.com/jcsda-internal/soca.git" BRANCH develop )
 
   # Build JEDI/DA or other peripherals
-  ecbuild_bundle( PROJECT gdas-utils SOURCE "./utils" )
+  # ecbuild_bundle( PROJECT gdas-utils SOURCE "./utils" )
 
 # Build IODA converters
   option(BUILD_IODA_CONVERTERS "Build IODA Converters" ON)
