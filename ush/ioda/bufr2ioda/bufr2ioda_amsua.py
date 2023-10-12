@@ -2,9 +2,13 @@ import argparse
 from bufr2ioda_base import Bufr2IodaBase
 #from wxflow import Logger
 from logging import Logger
-
+from antcorr_application import ACCoeff, apply_ant_corr
+from utils import timing_decorator
 
 logger = Logger('BUFR2IODA_satwind_amv_goes.py', level='DEBUG')
+
+R1000 = 1000.0
+R1000000 = 1000000.0
 
 
 class Bufr2IodaAmusa(Bufr2IodaBase):
@@ -12,7 +16,7 @@ class Bufr2IodaAmusa(Bufr2IodaBase):
 
 
 class Bufr2IodaEbmua(Bufr2IodaBase):
-
+    @timing_decorator
     def re_map_variable(self, data):
         #  TODO replace this follow that in GSI
         # read_bufrtovs.f90
@@ -21,15 +25,25 @@ class Bufr2IodaEbmua(Bufr2IodaBase):
 
         sat_ids = data.allSubCategories()
         for sat_id in sat_ids:
-            td = data.get('variables/antennaTemperature', sat_id)
-            ifov = data.get('variables/fieldOfViewNumber', sat_id)
-            tb = self.apply_ant_corr(td,ifov)
-            data.set('variables/antennaTemperature', tb, sat_id)  # TODO to set dim path in cpp
+            ta = data.get('variables/antennaTemperature', sat_id)
+            if ta.shape[0]:
+                ifov = data.get('variables/fieldOfViewNumber', sat_id)
+                tb = self.apply_ant_corr(sat_id, ta, ifov)
+                data.set('variables/antennaTemperature', tb, sat_id)  # TODO to set dim path in cpp
 
-    def apply_ant_corr(self, td, ifov):
-        # TODO replace real function
-        tb = td * 1.4
-        return tb
+    def apply_ant_corr(self, sat_id, ta, ifov):
+        ac = ACCoeff()  #  TODO add later
+        llll = 1  # TODO how to set this
+        if llll == 1:
+            if sat_id not in ['n15', 'n16']:
+                # Convert antenna temperature to brightness temperature
+                for i in range(ta.shape[0]):
+                    x = ta[i, :]
+                    apply_ant_corr(ac, ifov[i], x)  # TODO if this is too slow we might need to optimize it
+                    x[x > R1000] = R1000000
+        else:
+            pass  # TODO after know how to set llll
+        return ta
 
 
 if __name__ == '__main__':
